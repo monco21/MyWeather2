@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">MyWeather</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="weatherImage">weatherImage</string>
+    <string name="degreeImage">degree</string>
+    <string name="locationName">Aberdeen, United Kingdom</string>
+    <string name="timeStamp1">At 2:00 pm it is</string>
+    <string name="temperatureLabel">8</string>
+    <string name="feelsLikeView">Feels like:</string>
+    <string name="feelsLikeDegreeView">6.0</string>
+    <string name="humidity">HUMIDITY</string>
+    <string name="windSpeed">WIND SPEED</string>
+    <string name="rain">RAIN?</string>
+    <string name="speedNumbers">20.0</string>
+    <string name="humidityPercent">75</string>
+    <string name="rainPercent">75</string>
+    <string name="percent">%</string>
+    <string name="km">KM/h</string>
+    <string name="percent2">%</string>
+    <string name="weatherCondition">Partly Cloudy</string>
+    <string name="latitude">Alsjdoasod</string>
+</resources>

@@ -9,7 +9,7 @@
     <string name="degreeImage">degree</string>
     <string name="locationName">Aberdeen, United Kingdom</string>
     <string name="timeStamp1">At 2:00 pm it is</string>
-    <string name="temperatureLabel">8</string>
+    <string name="temperatureLabel"></string>
     <string name="feelsLikeView">Feels like:</string>
     <string name="feelsLikeDegreeView">6.0</string>
     <string name="humidity">HUMIDITY</string>

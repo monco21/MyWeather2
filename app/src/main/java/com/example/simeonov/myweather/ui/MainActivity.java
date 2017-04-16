@@ -40,12 +40,19 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Callback {
 
+    private CurrentFragment currentTab;
+    private HourlyFragment hourlyTab;
+    private DailyFragment dailyTab;
+    private LocationFragment locationTab;
+    private LocationListener ll;
+    private LocationManager lm;
+    private Current cur;
     public static double latitude = 0.0;
     public static double longitude = 0.0;
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static String API_KEY = "44db05f6213a0b3ff14e950e7098dbcb";
+    private static String API_KEY = "d66d1f5eb4750b2e8306fa12e5cf7bda";
     TextView m;
 
     /**
@@ -80,13 +87,14 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        LocationListener ll = new LocationListener() {
+         lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+         ll = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 Log.d(TAG, location.toString());
                 latitude = location.getLatitude();
                 longitude = location.getLongitude();
+                getForecast();
 
             }
 
@@ -106,8 +114,13 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+    }
+
+    private void checkForPermission(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 requestPermissions(new String[]{
                         Manifest.permission.INTERNET,
@@ -123,11 +136,45 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
         } else {
-            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, ll);
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
         }
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED){
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+      checkForPermission();
 
     }
 
+    private void getForecast(){
+        String forecast = "https://api.forecast.io/forecast/" + API_KEY + "/" + latitude + "," + longitude + "?units=si";
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url(forecast).build();
+        Call call = client.newCall(request);
+
+        call.enqueue(this);
+    }
+    private Current getCurrentDetails(String jsonData) {
+        Current temp = new Current();
+        try {
+            JSONObject forecast = new JSONObject(jsonData);
+            JSONObject current = forecast.getJSONObject("currently");
+            temp.setHumidity(current.getDouble("humidity"));
+            temp.setTemp(current.getDouble("temperature"));
+            temp.setSummary(current.getString("summary"));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return temp;
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -162,91 +209,25 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment implements Callback {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlaceholderFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-
-            if (getArguments().getInt(ARG_SECTION_NUMBER) == 1) {
-                View rootView = inflater.inflate(R.layout.fragment_current, container, false);
-                return rootView;
-            } else if (getArguments().getInt(ARG_SECTION_NUMBER) == 2) {
-                View rootView = inflater.inflate(R.layout.fragment_hourly, container, false);
-                return rootView;
-            } else {
-                View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-                TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-                textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-                return rootView;
-            }
-        }
-
-        @Override
-        public void onResume() {
-            super.onResume();
-            String forecast = "https://api.forecast.io/forecast/" + API_KEY + "/" + latitude + "," + longitude + "?units=si";
-
-            OkHttpClient client = new OkHttpClient();
-            Request request = new Request.Builder().url(forecast).build();
-            Call call = client.newCall(request);
-
-            call.enqueue(this);
-
-        }
-
-        @Override
-        public void onFailure(Call call, IOException e) {
-
-        }
-
-        @Override
-        public void onResponse(Call call, Response response) throws IOException {
-
-            String json = response.body().string();
-            Current cur = getCurrentDetails(json);
-            Log.d(TAG,cur.toString());
-        }
-
-
-        private Current getCurrentDetails(String jsonData){
-            Current temp = new Current();
-            try {
-                JSONObject forecast =  new JSONObject(jsonData);
-                JSONObject current = forecast.getJSONObject("currently");
-                temp.setHumidity(current.getDouble("humidity"));
-                temp.setTemp(current.getDouble("temperature"));
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return temp;
-        }
+    @Override
+    public void onFailure(Call call, IOException e) {
 
     }
+
+    @Override
+    public void onResponse(Call call, Response response) throws IOException {
+        String json = response.body().string();
+        cur = getCurrentDetails(json);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                currentTab.setDetails(cur);
+            }
+        });
+        Log.d(TAG, cur.toString());
+
+    }
+
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -264,7 +245,22 @@ public class MainActivity extends AppCompatActivity {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
 
-            return PlaceholderFragment.newInstance(position + 1);
+            switch (position) {
+                case 0:
+                    currentTab = new CurrentFragment();
+                    return currentTab;
+                case 1:
+                    hourlyTab = new HourlyFragment();
+                    return hourlyTab;
+                case 2:
+                    dailyTab = new DailyFragment();
+                    return dailyTab;
+                case 3:
+                    locationTab = new LocationFragment();
+                    return locationTab;
+                default:
+                    return null;
+            }
         }
 
         @Override

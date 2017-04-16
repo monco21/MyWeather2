@@ -7,9 +7,18 @@ package com.example.simeonov.myweather.weather;
 public class Current {
     private double temp;
     private double humidity;
+    private String summary;
 
     public double getTemp() {
         return temp;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 
     public void setTemp(double temp) {
@@ -24,11 +33,13 @@ public class Current {
         this.humidity = humidity;
     }
 
+
     @Override
     public String toString() {
         return "Current{" +
                 "temp=" + temp +
                 ", humidity=" + humidity +
+                ", summary='" + summary + '\'' +
                 '}';
     }
 }

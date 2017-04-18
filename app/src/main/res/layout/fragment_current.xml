@@ -9,11 +9,11 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
         android:background="@color/colorPrimary"
         android:contentDescription="@string/weatherImage"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
 
     <ImageView
         android:id="@+id/degreesImage"
@@ -197,15 +197,15 @@
         android:layout_alignEnd="@+id/rainTextView" />
 
     <TextView
-        android:id="@+id/weatherCondition"
+        android:id="@+id/summaryView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:text="@string/weatherCondition"
+        android:layout_below="@+id/speedKmTextView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp"
+        android:text="@string/summary"
         android:textColor="@android:color/background_light"
-        android:textSize="18sp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignEnd="@+id/windSpeedTextView" />
+        android:textSize="22sp" />
 
 
 </RelativeLayout>

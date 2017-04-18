@@ -15,14 +15,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+
 import android.widget.TextView;
 
 import com.example.simeonov.myweather.R;
@@ -32,6 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -48,11 +48,12 @@ public class MainActivity extends AppCompatActivity implements Callback {
     private LocationFragment locationTab;
     private LocationListener ll;
     private LocationManager lm;
+    private final int HOUR = 50000;
     private Current cur;
     public static double latitude = 0.0;
     public static double longitude = 0.0;
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static String API_KEY = "d66d1f5eb4750b2e8306fa12e5cf7bda";
+    private static String API_KEY = "3175c38fdb70bb6d212d17974e11f739";
     TextView m;
 
     /**
@@ -75,7 +76,6 @@ public class MainActivity extends AppCompatActivity implements Callback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -83,19 +83,19 @@ public class MainActivity extends AppCompatActivity implements Callback {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setOffscreenPageLimit(4);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-         lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-         ll = new LocationListener() {
+        lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        ll = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 Log.d(TAG, location.toString());
                 latitude = location.getLatitude();
                 longitude = location.getLongitude();
                 getForecast();
-
             }
 
             @Override
@@ -114,9 +114,10 @@ public class MainActivity extends AppCompatActivity implements Callback {
             }
         };
 
+
     }
 
-    private void checkForPermission(){
+    private void checkForPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -136,31 +137,25 @@ public class MainActivity extends AppCompatActivity implements Callback {
                 return;
             }
         } else {
-            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, HOUR, 0, ll);
         }
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED){
-            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
+                == PackageManager.PERMISSION_GRANTED) {
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, HOUR, 0, ll);
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-      checkForPermission();
-
-    }
-
-    private void getForecast(){
+    private void getForecast() {
         String forecast = "https://api.forecast.io/forecast/" + API_KEY + "/" + latitude + "," + longitude + "?units=si";
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(forecast).build();
         Call call = client.newCall(request);
-
         call.enqueue(this);
     }
+
+
     private Current getCurrentDetails(String jsonData) {
         Current temp = new Current();
         try {
@@ -169,12 +164,23 @@ public class MainActivity extends AppCompatActivity implements Callback {
             temp.setHumidity(current.getDouble("humidity"));
             temp.setTemp(current.getDouble("temperature"));
             temp.setSummary(current.getString("summary"));
+            temp.setWindSpeed(current.getDouble("windSpeed"));
+            temp.setRain(current.getDouble("precipProbability"));
+            temp.setFeelsLike(current.getDouble("apparentTemperature"));
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return temp;
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkForPermission();
+
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -233,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements Callback {
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -265,7 +271,6 @@ public class MainActivity extends AppCompatActivity implements Callback {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
             return 4;
         }
 

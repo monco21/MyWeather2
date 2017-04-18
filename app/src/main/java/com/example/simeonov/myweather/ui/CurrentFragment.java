@@ -1,6 +1,7 @@
 package com.example.simeonov.myweather.ui;
 
 import android.content.Context;
+import android.icu.text.DecimalFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,9 +22,13 @@ import com.example.simeonov.myweather.weather.Current;
  */
 public class CurrentFragment extends Fragment {
 
-    TextView temp;
-    TextView humidity;
-    TextView summury;
+    private TextView temp;
+    private TextView humidity;
+    private TextView summury;
+    private TextView windSpeed;
+    private double wind;
+    private TextView rain;
+    private TextView feelsLike;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -64,19 +69,30 @@ public class CurrentFragment extends Fragment {
         }
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_current, container, false);
         temp = (TextView) view.findViewById(R.id.temperatureView);
         humidity = (TextView) view.findViewById(R.id.humidityPercentTextView);
+        summury = (TextView) view.findViewById(R.id.summaryView);
+        windSpeed = (TextView) view.findViewById(R.id.speedKmTextView);
+        rain = (TextView) view.findViewById(R.id.rainPercentTextView);
+        feelsLike = (TextView) view.findViewById(R.id.feelsLikeDegrees);
+
         // Inflate the layout for this fragment
         return view;
     }
 
 
     public void setDetails(Current current) {
-        this.temp.setText(String.valueOf((current.getTemp())));
-        this.humidity.setText(String.valueOf(current.getHumidity()));
+        this.temp.setText(String.valueOf(Math.round(current.getTemp())));
+        this.humidity.setText(String.valueOf(Math.round(current.getHumidity() * 100)));
+        this.summury.setText(current.getSummary());
+        wind = Math.round(current.getWindSpeed() * 3.6);
+        this.windSpeed.setText(String.format("%.1f", wind));
+        this.rain.setText(String.valueOf(Math.round(current.getRain()*100)));
+        this.feelsLike.setText(String.valueOf(Math.round(current.getFeelsLike())));
     }
 }

@@ -9,18 +9,18 @@
     <string name="degreeImage">degree</string>
     <string name="locationName">Aberdeen, United Kingdom</string>
     <string name="timeStamp1">At 2:00 pm it is</string>
-    <string name="temperatureLabel"></string>
+    <string name="temperatureLabel">--</string>
     <string name="feelsLikeView">Feels like:</string>
-    <string name="feelsLikeDegreeView">6.0</string>
+    <string name="feelsLikeDegreeView">--</string>
     <string name="humidity">HUMIDITY</string>
     <string name="windSpeed">WIND SPEED</string>
     <string name="rain">RAIN?</string>
-    <string name="speedNumbers">20.0</string>
-    <string name="humidityPercent">75</string>
-    <string name="rainPercent">75</string>
+    <string name="speedNumbers">--</string>
+    <string name="humidityPercent">--</string>
+    <string name="rainPercent">--</string>
     <string name="percent">%</string>
     <string name="km">KM/h</string>
     <string name="percent2">%</string>
-    <string name="weatherCondition">Partly Cloudy</string>
     <string name="latitude">Alsjdoasod</string>
+    <string name="summary">--</string>
 </resources>

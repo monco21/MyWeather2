@@ -8,9 +8,28 @@ public class Current {
     private double temp;
     private double humidity;
     private String summary;
+    private double windSpeed;
+    private double rain;
+    private double feelsLike;
 
     public double getTemp() {
         return temp;
+    }
+
+    public double getFeelsLike() {
+        return feelsLike;
+    }
+
+    public void setFeelsLike(double feelsLike) {
+        this.feelsLike = feelsLike;
+    }
+
+    public double getRain() {
+        return rain;
+    }
+
+    public void setRain(double rain) {
+        this.rain = rain;
     }
 
     public String getSummary() {
@@ -33,6 +52,13 @@ public class Current {
         this.humidity = humidity;
     }
 
+    public double getWindSpeed() {
+        return windSpeed;
+    }
+
+    public void setWindSpeed(double windSpeed) {
+        this.windSpeed = windSpeed;
+    }
 
     @Override
     public String toString() {
@@ -40,6 +66,9 @@ public class Current {
                 "temp=" + temp +
                 ", humidity=" + humidity +
                 ", summary='" + summary + '\'' +
+                ", windSpeed=" + windSpeed +
+                ", rain=" + rain +
+                ", feelsLike=" + feelsLike +
                 '}';
     }
 }
